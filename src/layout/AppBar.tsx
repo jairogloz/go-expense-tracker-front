@@ -10,12 +10,14 @@ import {
   Box,
 } from "@mui/material";
 import { AccountCircle, Settings, Logout } from "@mui/icons-material";
+import { useAuth } from "../contexts/AuthContext";
 
 interface AppBarComponentProps {
   // Future use for mobile menu toggle if needed
 }
 
 const AppBarComponent: React.FC<AppBarComponentProps> = () => {
+  const { user, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -37,9 +39,13 @@ const AppBarComponent: React.FC<AppBarComponentProps> = () => {
     handleClose();
   };
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    handleClose();
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      handleClose();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -61,7 +67,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = () => {
             color="inherit"
           >
             <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.dark" }}>
-              <AccountCircle />
+              {user?.email?.charAt(0).toUpperCase() || <AccountCircle />}
             </Avatar>
           </IconButton>
           <Menu

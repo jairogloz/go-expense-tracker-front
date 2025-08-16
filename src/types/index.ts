@@ -52,12 +52,6 @@ export interface ApiError {
   details?: Record<string, any>;
 }
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
 // Utility types for forms
 export type TransactionFormData = Omit<Transaction, 'id' | 'created_at' | 'updated_at'>;
 
@@ -82,3 +76,33 @@ export const TRANSACTION_TYPES = {
   expense: 'Expense',
   income: 'Income',
 } as const;
+
+// Authentication types
+export interface User {
+  id: string;
+  email: string;
+  user_metadata?: {
+    full_name?: string;
+    avatar_url?: string;
+  };
+}
+
+export interface AuthError {
+  message: string;
+  status?: number;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignupCredentials extends LoginCredentials {
+  confirmPassword: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: AuthError | null;
+}

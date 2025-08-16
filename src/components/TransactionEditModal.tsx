@@ -14,7 +14,7 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import type { Transaction, TransactionUpdateInput } from "../types";
+import type { Transaction, TransactionCreateInput } from "../types";
 import { CATEGORY_LABELS } from "../types";
 import { useUpdateTransaction } from "../hooks/useTransactions";
 import { validateTransactionData, formatDateForInput } from "../utils";
@@ -66,21 +66,15 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       return;
     }
 
-    const updateData: TransactionUpdateInput = {};
-
-    // Only include changed fields
-    if (formData.amount !== transaction.amount)
-      updateData.amount = formData.amount;
-    if (formData.currency !== transaction.currency)
-      updateData.currency = formData.currency;
-    if (formData.category !== transaction.category)
-      updateData.category = formData.category;
-    if (formData.type !== transaction.type) updateData.type = formData.type;
-    if (formData.date !== formatDateForInput(transaction.date)) {
-      updateData.date = new Date(formData.date!).toISOString();
-    }
-    if (formData.description !== transaction.description)
-      updateData.description = formData.description;
+    // Send all fields as required by the backend API
+    const updateData: TransactionCreateInput = {
+      amount: formData.amount!,
+      currency: formData.currency!,
+      category: formData.category!,
+      type: formData.type!,
+      date: new Date(formData.date!).toISOString(),
+      description: formData.description!,
+    };
 
     try {
       await updateMutation.mutateAsync({

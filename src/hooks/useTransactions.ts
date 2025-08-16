@@ -48,8 +48,8 @@ export const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TransactionUpdateInput }) =>
-      transactionsApi.updateTransaction(id, data),
+    mutationFn: ({ id, data }: { id: string; data: TransactionCreateInput }) =>
+      transactionsApi.updateTransaction(id, data as TransactionUpdateInput),
     onSuccess: (updatedTransaction, { id }) => {
       // Update the transaction in cache
       queryClient.setQueryData(
