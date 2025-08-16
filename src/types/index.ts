@@ -1,5 +1,6 @@
 export interface Transaction {
-  id: string;
+  id: string | number; // Backend can return number for new transactions
+  user_id?: string; // Optional user_id field from backend
   amount: number;
   currency: string;
   category: string;
@@ -44,6 +45,7 @@ export interface ParseExpenseRequest {
 
 export interface ParseExpenseResponse {
   transactions: Transaction[];
+  message?: string;
 }
 
 export interface ApiError {

@@ -96,12 +96,29 @@ export const useParseExpense = () => {
   return useMutation({
     mutationFn: (data: ParseExpenseRequest) => transactionsApi.parseExpense(data),
     onSuccess: (response) => {
+      console.log('Parse expense response:', response);
+      
+      // Ensure we have transactions array
+      if (!response.transactions || !Array.isArray(response.transactions)) {
+        console.error('Invalid response format - missing transactions array');
+        return;
+      }
+
       // Optimistically add parsed transactions to cache
       queryClient.setQueriesData(
         { queryKey: QUERY_KEYS.transactions },
         (oldData: any) => {
-          if (!oldData) return oldData;
+          if (!oldData) {
+            console.log('No existing data, creating new cache entry');
+            return {
+              transactions: response.transactions,
+              total: response.transactions.length,
+              limit: 20,
+              offset: 0,
+            };
+          }
           
+          console.log('Updating existing cache with new transactions');
           return {
             ...oldData,
             transactions: [...response.transactions, ...oldData.transactions],
@@ -109,6 +126,12 @@ export const useParseExpense = () => {
           };
         }
       );
+
+      // Invalidate to ensure fresh data on next fetch
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.transactions });
+    },
+    onError: (error) => {
+      console.error('Parse expense mutation error:', error);
     },
   });
 };

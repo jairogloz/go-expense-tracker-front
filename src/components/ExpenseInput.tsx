@@ -27,11 +27,17 @@ const ExpenseInput: React.FC<ExpenseInputProps> = ({ onExpenseParsed }) => {
     setError(null);
 
     try {
-      await parseExpenseMutation.mutateAsync({ text: inputText.trim() });
+      const result = await parseExpenseMutation.mutateAsync({
+        text: inputText.trim(),
+      });
+      console.log("Parse expense successful:", result);
       setInputText("");
       onExpenseParsed?.();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to parse expense");
+      console.error("Parse expense error:", err);
+      const errorMessage =
+        err.response?.data?.message || err.message || "Failed to parse expense";
+      setError(errorMessage);
     }
   };
 
