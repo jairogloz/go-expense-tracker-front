@@ -9,7 +9,7 @@ import type {
 
 export const QUERY_KEYS = {
   transactions: ['transactions'] as const,
-  transaction: (id: string) => ['transactions', id] as const,
+  transaction: (id: string | number) => ['transactions', String(id)] as const,
 };
 
 // Get transactions with pagination
@@ -22,11 +22,10 @@ export const useTransactions = (page = 1, limit = 20) => {
 };
 
 // Get single transaction
-export const useTransaction = (id: string) => {
+export const useTransaction = (id: string | number) => {
   return useQuery({
     queryKey: QUERY_KEYS.transaction(id),
-    queryFn: () => transactionsApi.getTransaction(id),
-    enabled: !!id,
+    queryFn: () => transactionsApi.getTransaction(String(id)),
   });
 };
 
@@ -48,7 +47,7 @@ export const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TransactionCreateInput }) =>
+    mutationFn: ({ id, data }: { id: string | number; data: TransactionCreateInput }) =>
       transactionsApi.updateTransaction(id, data as TransactionUpdateInput),
     onSuccess: (updatedTransaction, { id }) => {
       // Update the transaction in cache
@@ -80,7 +79,7 @@ export const useDeleteTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => transactionsApi.deleteTransaction(id),
+    mutationFn: (id: string | number) => transactionsApi.deleteTransaction(id),
     onSuccess: (_, deletedId) => {
       // Remove from cache and invalidate list
       queryClient.removeQueries({ queryKey: QUERY_KEYS.transaction(deletedId) });

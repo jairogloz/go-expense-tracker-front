@@ -107,7 +107,7 @@ export const transactionsApi = {
   },
 
   // Get single transaction
-  getTransaction: async (id: string): Promise<Transaction> => {
+  getTransaction: async (id: string | number): Promise<Transaction> => {
     const response = await apiClient.get(`/transactions/${id}`);
     return response.data;
   },
@@ -119,13 +119,13 @@ export const transactionsApi = {
   },
 
   // Update existing transaction (requires all fields)
-  updateTransaction: async (id: string, data: TransactionUpdateInput | TransactionCreateInput): Promise<Transaction> => {
+  updateTransaction: async (id: string | number, data: TransactionUpdateInput | TransactionCreateInput): Promise<Transaction> => {
     const response = await apiClient.put(`/transactions/${id}`, data);
     return response.data;
   },
 
   // Delete transaction
-  deleteTransaction: async (id: string): Promise<void> => {
+  deleteTransaction: async (id: string | number): Promise<void> => {
     await apiClient.delete(`/transactions/${id}`);
   },
 
