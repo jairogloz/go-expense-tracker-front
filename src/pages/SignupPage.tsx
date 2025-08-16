@@ -17,7 +17,7 @@ import type { SignupCredentials } from "../types";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp, loading, error } = useAuth();
+  const { signUp, error } = useAuth();
   const [formData, setFormData] = useState<SignupCredentials>({
     email: "",
     password: "",
@@ -25,6 +25,7 @@ const SignupPage: React.FC = () => {
   });
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange =
     (field: keyof SignupCredentials) =>
@@ -68,6 +69,9 @@ const SignupPage: React.FC = () => {
     }
 
     try {
+      setIsSubmitting(true);
+      setFormErrors([]);
+      setSuccessMessage("");
       await signUp(formData);
       setSuccessMessage(
         "Account created successfully! Please check your email to verify your account."
@@ -79,6 +83,8 @@ const SignupPage: React.FC = () => {
     } catch (error) {
       // Error is handled by AuthContext
       console.error("Signup failed:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -178,9 +184,9 @@ const SignupPage: React.FC = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? <CircularProgress size={24} /> : "Sign Up"}
+                {isSubmitting ? <CircularProgress size={24} /> : "Sign Up"}
               </Button>
 
               <Box textAlign="center">

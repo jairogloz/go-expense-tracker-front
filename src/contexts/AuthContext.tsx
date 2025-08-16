@@ -23,6 +23,39 @@ const transformUser = (supabaseUser: SupabaseUser): User => ({
   user_metadata: supabaseUser.user_metadata,
 });
 
+// Helper function to provide user-friendly error messages
+const getErrorMessage = (error: any): string => {
+  const message = error.message || error.toString();
+
+  // Custom error messages for common Supabase auth errors
+  if (message.includes("Email not confirmed")) {
+    return "Please check your email and click the verification link before signing in. Check your spam folder if you don't see it.";
+  }
+
+  if (message.includes("Invalid login credentials")) {
+    return "Invalid email or password. Please check your credentials and try again.";
+  }
+
+  if (message.includes("User already registered")) {
+    return "An account with this email already exists. Please sign in instead.";
+  }
+
+  if (message.includes("Password should be at least")) {
+    return "Password must be at least 6 characters long.";
+  }
+
+  if (message.includes("Unable to validate email address")) {
+    return "Please enter a valid email address.";
+  }
+
+  if (message.includes("Email rate limit exceeded")) {
+    return "Too many email requests. Please wait a few minutes before trying again.";
+  }
+
+  // Return original message if no custom mapping found
+  return message;
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -84,10 +117,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       if (error) throw error;
+
+      // Don't set loading to false here - let the auth state change handler do it
     } catch (error: any) {
       setState((prev) => ({
         ...prev,
-        error: { message: error.message },
+        error: { message: getErrorMessage(error) },
         loading: false,
       }));
       throw error;
@@ -111,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       setState((prev) => ({
         ...prev,
-        error: { message: error.message },
+        error: { message: getErrorMessage(error) },
         loading: false,
       }));
       throw error;
@@ -149,7 +184,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       setState((prev) => ({
         ...prev,
-        error: { message: error.message },
+        error: { message: getErrorMessage(error) },
         loading: false,
       }));
       throw error;

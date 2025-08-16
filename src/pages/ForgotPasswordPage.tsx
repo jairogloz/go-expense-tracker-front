@@ -15,10 +15,11 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 
 const ForgotPasswordPage: React.FC = () => {
-  const { resetPassword, loading } = useAuth();
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -36,10 +37,13 @@ const ForgotPasswordPage: React.FC = () => {
     }
 
     try {
+      setIsSubmitting(true);
       await resetPassword(email);
       setSuccess("Password reset email sent! Check your inbox.");
     } catch (error: any) {
       setError(error.message || "Failed to send reset email");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -100,9 +104,13 @@ const ForgotPasswordPage: React.FC = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? <CircularProgress size={24} /> : "Send Reset Email"}
+                {isSubmitting ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  "Send Reset Email"
+                )}
               </Button>
 
               <Box textAlign="center">

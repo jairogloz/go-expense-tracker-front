@@ -18,12 +18,13 @@ import type { LoginCredentials } from "../types";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, loading, error } = useAuth();
+  const { signIn, error } = useAuth();
   const [formData, setFormData] = useState<LoginCredentials>({
     email: "",
     password: "",
   });
   const [formErrors, setFormErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange =
     (field: keyof LoginCredentials) =>
@@ -58,11 +59,15 @@ const LoginPage: React.FC = () => {
     }
 
     try {
+      setIsSubmitting(true);
+      setFormErrors([]);
       await signIn(formData);
       navigate("/"); // Redirect to dashboard after successful login
     } catch (error) {
       // Error is handled by AuthContext
       console.error("Login failed:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -138,9 +143,9 @@ const LoginPage: React.FC = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? <CircularProgress size={24} /> : "Sign In"}
+                {isSubmitting ? <CircularProgress size={24} /> : "Sign In"}
               </Button>
 
               <Divider sx={{ my: 2 }} />
