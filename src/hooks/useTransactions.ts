@@ -50,6 +50,8 @@ export const useUpdateTransaction = () => {
     mutationFn: ({ id, data }: { id: string | number; data: TransactionCreateInput }) =>
       transactionsApi.updateTransaction(id, data as TransactionUpdateInput),
     onSuccess: (updatedTransaction, { id }) => {
+      console.log('Update mutation success:', { id, updatedTransaction });
+      
       // Update the transaction in cache
       queryClient.setQueryData(
         QUERY_KEYS.transaction(id),
@@ -65,11 +67,15 @@ export const useUpdateTransaction = () => {
           return {
             ...oldData,
             transactions: oldData.transactions.map((transaction: Transaction) =>
-              transaction.id === id ? updatedTransaction : transaction
+              // Convert both IDs to strings for comparison since backend returns numbers
+              String(transaction.id) === String(id) ? updatedTransaction : transaction
             ),
           };
         }
       );
+    },
+    onError: (error, variables) => {
+      console.error('Update mutation error:', { error, variables });
     },
   });
 };

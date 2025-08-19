@@ -48,8 +48,11 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       });
       setHasChanges(false);
       setErrors([]);
+
+      // Reset mutation state when opening modal
+      updateMutation.reset();
     }
-  }, [transaction]);
+  }, [transaction, updateMutation]);
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -77,13 +80,21 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
     };
 
     try {
-      await updateMutation.mutateAsync({
+      console.log("Updating transaction:", {
         id: transaction.id,
         data: updateData,
       });
+      const result = await updateMutation.mutateAsync({
+        id: transaction.id,
+        data: updateData,
+      });
+      console.log("Update successful:", result);
       onClose();
     } catch (error) {
-      setErrors(["Failed to update transaction"]);
+      console.error("Update error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update transaction";
+      setErrors([errorMessage]);
     }
   };
 
@@ -105,6 +116,12 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
             {errors.map((error, index) => (
               <div key={index}>{error}</div>
             ))}
+          </Alert>
+        )}
+
+        {updateMutation.error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            <strong>Mutation Error:</strong> {updateMutation.error.message}
           </Alert>
         )}
 
