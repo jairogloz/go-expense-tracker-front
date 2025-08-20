@@ -5,6 +5,7 @@ export interface Transaction {
   amount: number;
   currency: string;
   category: string;
+  subcategory?: string;
   type: 'expense' | 'income';
   date: string; // ISO date string
   description: string;
@@ -16,6 +17,7 @@ export interface TransactionCreateInput {
   amount: number;
   currency: string;
   category: string;
+  subcategory?: string;
   type: 'expense' | 'income';
   date: string;
   description: string;
@@ -26,6 +28,7 @@ export interface TransactionUpdateInput {
   amount?: number;
   currency?: string;
   category?: string;
+  subcategory?: string;
   type?: 'expense' | 'income';
   date?: string;
   description?: string;
@@ -129,3 +132,66 @@ export interface AuthState {
   loading: boolean;
   error: AuthError | null;
 }
+
+// Category and subcategory constants
+export const EXPENSE_CATEGORIES = {
+  guilt_free: 'guilt_free_spending',
+  fixed_costs: 'fixed_costs',
+  investments: 'investments',
+  savings: 'savings_goals'
+} as const;
+
+export const INCOME_CATEGORIES = {
+  salary: 'salary',
+  freelance: 'freelance', 
+  investments: 'investments',
+  bonus: 'bonus'
+} as const;
+
+export const SUBCATEGORIES = {
+  fixed_costs: [
+    'house_payments',
+    'utilities',
+    'internet_and_phone',
+    'insurance',
+    'loan_payments',
+    'subscriptions'
+  ],
+  investments: [
+    'afore',
+    'cetes',
+    'mutual_funds',
+    'retirement_savings',
+    'stocks',
+    'real_estate',
+    'crypto'
+  ],
+  savings_goals: [
+    'emergency_fund',
+    'vacation_savings',
+    'vehicle_savings',
+    'wedding_savings',
+    'home_down_payment',
+    'medical_savings',
+    'technology_savings'
+  ],
+  guilt_free_spending: [
+    'dining_out',
+    'coffee_and_snacks',
+    'clothing_and_accessories',
+    'hobbies',
+    'entertainment',
+    'fitness_and_wellness',
+    'gifts_and_celebrations',
+    'travel',
+    'gadgets_and_tech'
+  ],
+  // Income categories don't have subcategories in the provided data
+  salary: [],
+  freelance: [],
+  bonus: []
+} as const;
+
+export type ExpenseCategory = keyof typeof EXPENSE_CATEGORIES;
+export type IncomeCategory = keyof typeof INCOME_CATEGORIES;
+export type SubcategoryKey = keyof typeof SUBCATEGORIES;

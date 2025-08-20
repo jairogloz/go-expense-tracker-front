@@ -89,6 +89,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               <TableCell>Amount</TableCell>
               <TableCell>Currency</TableCell>
               <TableCell>Category</TableCell>
+              <TableCell>Subcategory</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Account</TableCell>
               <TableCell>Date</TableCell>
@@ -101,7 +102,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               <TransactionTableSkeleton rows={rowsPerPage} />
             ) : transactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -134,6 +135,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   <TableCell>{transaction.currency.toUpperCase()}</TableCell>
                   <TableCell>
                     {getCategoryLabel(transaction.category)}
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" noWrap sx={{ maxWidth: 150 }}>
+                      {transaction.subcategory && transaction.subcategory.trim()
+                        ? getCategoryLabel(transaction.subcategory)
+                        : "-"}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip

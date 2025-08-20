@@ -1,5 +1,3 @@
-import { CATEGORY_LABELS } from '../types';
-
 // Format currency with locale-specific formatting
 export const formatCurrency = (amount: number, currency = 'USD'): string => {
   return new Intl.NumberFormat('en-US', {
@@ -27,7 +25,14 @@ export const formatDateForInput = (dateString: string): string => {
 
 // Get human-readable category label
 export const getCategoryLabel = (category: string): string => {
-  return CATEGORY_LABELS[category.toLowerCase()] || category;
+  // Handle the new category structure - convert snake_case to Title Case
+  if (category) {
+    return category
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+  return category;
 };
 
 // Get color for transaction type

@@ -22,6 +22,9 @@ const TransactionTableSkeleton: React.FC<TransactionTableSkeletonProps> = ({
             <Skeleton variant="text" width="70%" />
           </TableCell>
           <TableCell>
+            <Skeleton variant="text" width="70%" />
+          </TableCell>
+          <TableCell>
             <Skeleton variant="rectangular" width={60} height={24} />
           </TableCell>
           <TableCell>

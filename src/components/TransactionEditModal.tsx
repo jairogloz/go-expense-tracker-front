@@ -15,7 +15,7 @@ import {
   Box,
 } from "@mui/material";
 import type { Transaction, TransactionCreateInput } from "../types";
-import { CATEGORY_LABELS } from "../types";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, SUBCATEGORIES } from "../types";
 import { useUpdateTransaction } from "../hooks/useTransactions";
 import { useAccountsMap } from "../hooks/useAccounts";
 import { validateTransactionData, formatDateForInput } from "../utils";
@@ -38,12 +38,62 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
   const updateMutation = useUpdateTransaction();
   const { accounts } = useAccountsMap();
 
+  // Helper function to get available categories based on transaction type
+  const getAvailableCategories = () => {
+    if (formData.type === "expense") {
+      return Object.keys(EXPENSE_CATEGORIES);
+    } else if (formData.type === "income") {
+      return Object.keys(INCOME_CATEGORIES);
+    }
+    return [];
+  };
+
+  // Helper function to get available subcategories based on selected category
+  const getAvailableSubcategories = () => {
+    if (!formData.category) return [];
+
+    // Map the category to the actual subcategory key
+    let subcategoryKey = formData.category;
+    if (formData.type === "expense") {
+      subcategoryKey =
+        EXPENSE_CATEGORIES[
+          formData.category as keyof typeof EXPENSE_CATEGORIES
+        ];
+    }
+
+    return SUBCATEGORIES[subcategoryKey as keyof typeof SUBCATEGORIES] || [];
+  };
+
+  // Helper function to handle type change and reset category/subcategory
+  const handleTypeChange = (newType: "expense" | "income") => {
+    setFormData((prev) => ({
+      ...prev,
+      type: newType,
+      category: "", // Reset category when type changes
+      subcategory: "", // Reset subcategory when type changes
+    }));
+    setHasChanges(true);
+    setErrors([]);
+  };
+
+  // Helper function to handle category change and reset subcategory
+  const handleCategoryChange = (newCategory: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      category: newCategory,
+      subcategory: "", // Reset subcategory when category changes
+    }));
+    setHasChanges(true);
+    setErrors([]);
+  };
+
   useEffect(() => {
     if (transaction) {
       setFormData({
         amount: transaction.amount,
         currency: transaction.currency,
         category: transaction.category,
+        subcategory: transaction.subcategory,
         type: transaction.type,
         account_id: transaction.account_id,
         date: formatDateForInput(transaction.date),
@@ -77,6 +127,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       amount: formData.amount!,
       currency: formData.currency!,
       category: formData.category!,
+      subcategory: formData.subcategory,
       type: formData.type!,
       date: new Date(formData.date!).toISOString(),
       description: formData.description!,
@@ -153,31 +204,63 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
-              <Select
-                value={formData.category || ""}
-                onChange={(e) => handleChange("category", e.target.value)}
-                label="Category"
-              >
-                {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                  <MenuItem key={key} value={key}>
-                    {label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
               <InputLabel>Type</InputLabel>
               <Select
                 value={formData.type || ""}
-                onChange={(e) => handleChange("type", e.target.value)}
+                onChange={(e) =>
+                  handleTypeChange(e.target.value as "expense" | "income")
+                }
                 label="Type"
               >
                 <MenuItem value="expense">Expense</MenuItem>
                 <MenuItem value="income">Income</MenuItem>
               </Select>
             </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={formData.category || ""}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                label="Category"
+                disabled={!formData.type}
+              >
+                {getAvailableCategories().map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel>Subcategory</InputLabel>
+              <Select
+                value={formData.subcategory || ""}
+                onChange={(e) => handleChange("subcategory", e.target.value)}
+                label="Subcategory"
+                disabled={
+                  !formData.category || getAvailableSubcategories().length === 0
+                }
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {getAvailableSubcategories().map((subcategory) => (
+                  <MenuItem key={subcategory} value={subcategory}>
+                    {subcategory
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <div style={{ flex: 1 }} />
           </Box>
 
           <FormControl fullWidth>
