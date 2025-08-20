@@ -7,6 +7,7 @@ import {
   useTransactions,
   useDeleteTransaction,
 } from "../hooks/useTransactions";
+import { useAccountsMap } from "../hooks/useAccounts";
 import type { Transaction } from "../types";
 
 const TransactionsPage: React.FC = () => {
@@ -27,6 +28,7 @@ const TransactionsPage: React.FC = () => {
 
   const { data, isLoading, error } = useTransactions(page + 1, rowsPerPage);
   const deleteTransactionMutation = useDeleteTransaction();
+  const { accountsMap } = useAccountsMap();
 
   const handleTransactionClick = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
@@ -114,6 +116,7 @@ const TransactionsPage: React.FC = () => {
           totalCount={data?.total || data?.transactions?.length || 0}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
+          accountsMap={accountsMap}
         />
       </Box>
 

@@ -27,6 +27,7 @@ import {
   getTransactionTypeColor,
 } from "../utils";
 import TransactionTableSkeleton from "./LoadingSkeleton";
+import type { Account } from "../types";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -38,6 +39,7 @@ interface TransactionTableProps {
   totalCount: number;
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  accountsMap?: Map<string, Account>;
 }
 
 const TransactionTable: React.FC<TransactionTableProps> = ({
@@ -50,6 +52,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   totalCount,
   onPageChange,
   onRowsPerPageChange,
+  accountsMap,
 }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] =
@@ -87,6 +90,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               <TableCell>Currency</TableCell>
               <TableCell>Category</TableCell>
               <TableCell>Type</TableCell>
+              <TableCell>Account</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Description</TableCell>
               <TableCell align="right">Actions</TableCell>
@@ -97,7 +101,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               <TransactionTableSkeleton rows={rowsPerPage} />
             ) : transactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -143,6 +147,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                         textTransform: "capitalize",
                       }}
                     />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" noWrap sx={{ maxWidth: 150 }}>
+                      {accountsMap?.get(transaction.account_id || "")
+                        ? accountsMap.get(transaction.account_id || "")!.name
+                        : transaction.account_id
+                        ? `Unknown Account (${transaction.account_id})`
+                        : "No Account"}
+                    </Typography>
                   </TableCell>
                   <TableCell>{formatDate(transaction.date)}</TableCell>
                   <TableCell>

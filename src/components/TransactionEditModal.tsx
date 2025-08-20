@@ -17,6 +17,7 @@ import {
 import type { Transaction, TransactionCreateInput } from "../types";
 import { CATEGORY_LABELS } from "../types";
 import { useUpdateTransaction } from "../hooks/useTransactions";
+import { useAccountsMap } from "../hooks/useAccounts";
 import { validateTransactionData, formatDateForInput } from "../utils";
 
 interface TransactionEditModalProps {
@@ -35,6 +36,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
 
   const updateMutation = useUpdateTransaction();
+  const { accounts } = useAccountsMap();
 
   useEffect(() => {
     if (transaction) {
@@ -43,6 +45,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
         currency: transaction.currency,
         category: transaction.category,
         type: transaction.type,
+        account_id: transaction.account_id,
         date: formatDateForInput(transaction.date),
         description: transaction.description,
       });
@@ -52,7 +55,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       // Reset mutation state when opening modal
       updateMutation.reset();
     }
-  }, [transaction, updateMutation]);
+  }, [transaction]); // Remove updateMutation from dependencies
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -77,6 +80,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       type: formData.type!,
       date: new Date(formData.date!).toISOString(),
       description: formData.description!,
+      account_id: formData.account_id,
     };
 
     try {
@@ -175,6 +179,24 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
               </Select>
             </FormControl>
           </Box>
+
+          <FormControl fullWidth>
+            <InputLabel>Account</InputLabel>
+            <Select
+              value={formData.account_id || ""}
+              onChange={(e) => handleChange("account_id", e.target.value)}
+              label="Account"
+            >
+              <MenuItem value="">
+                <em>No Account</em>
+              </MenuItem>
+              {accounts.map((account) => (
+                <MenuItem key={account.id} value={account.id}>
+                  {account.name} ({account.type})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <TextField
             fullWidth

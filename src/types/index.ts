@@ -1,6 +1,7 @@
 export interface Transaction {
   id: string | number; // Backend can return number for new transactions
   user_id?: string; // Optional user_id field from backend
+  account_id?: string; // Account ID for the transaction
   amount: number;
   currency: string;
   category: string;
@@ -18,6 +19,7 @@ export interface TransactionCreateInput {
   type: 'expense' | 'income';
   date: string;
   description: string;
+  account_id?: string; // Account ID for the transaction
 }
 
 export interface TransactionUpdateInput {
@@ -27,6 +29,25 @@ export interface TransactionUpdateInput {
   type?: 'expense' | 'income';
   date?: string;
   description?: string;
+  account_id?: string; // Account ID for the transaction
+}
+
+// Account types
+export interface Account {
+  id: string;
+  user_id: string;
+  name: string;
+  type: 'credit' | 'debit' | 'cash' | 'savings' | 'investment';
+  initial_balance: number;
+  last_calculated_balance: number;
+  last_calculated_at: string;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AccountsResponse {
+  accounts: Account[];
 }
 
 export interface PaginatedResponse<T> {
