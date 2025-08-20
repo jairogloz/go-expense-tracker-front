@@ -62,7 +62,9 @@ export const useUpdateTransaction = () => {
       queryClient.setQueriesData(
         { queryKey: QUERY_KEYS.transactions },
         (oldData: any) => {
-          if (!oldData) return oldData;
+          if (!oldData || !oldData.transactions || !Array.isArray(oldData.transactions)) {
+            return oldData;
+          }
           
           return {
             ...oldData,
@@ -126,7 +128,7 @@ export const useParseExpense = () => {
           console.log('Updating existing cache with new transactions');
           return {
             ...oldData,
-            transactions: [...response.transactions, ...oldData.transactions],
+            transactions: [...response.transactions, ...(oldData.transactions || [])],
             total: (oldData.total || oldData.transactions?.length || 0) + response.transactions.length,
           };
         }
