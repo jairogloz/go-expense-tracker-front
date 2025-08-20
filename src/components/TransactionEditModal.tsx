@@ -70,7 +70,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       ...prev,
       type: newType,
       category: "", // Reset category when type changes
-      subcategory: "", // Reset subcategory when type changes
+      sub_category: "", // Reset subcategory when type changes
     }));
     setHasChanges(true);
     setErrors([]);
@@ -81,7 +81,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
     setFormData((prev) => ({
       ...prev,
       category: newCategory,
-      subcategory: "", // Reset subcategory when category changes
+      sub_category: "", // Reset subcategory when category changes
     }));
     setHasChanges(true);
     setErrors([]);
@@ -93,7 +93,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
         amount: transaction.amount,
         currency: transaction.currency,
         category: transaction.category,
-        subcategory: transaction.subcategory,
+        sub_category: transaction.sub_category,
         type: transaction.type,
         account_id: transaction.account_id,
         date: formatDateForInput(transaction.date),
@@ -127,7 +127,7 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       amount: formData.amount!,
       currency: formData.currency!,
       category: formData.category!,
-      subcategory: formData.subcategory,
+      sub_category: formData.sub_category,
       type: formData.type!,
       date: new Date(formData.date!).toISOString(),
       description: formData.description!,
@@ -135,18 +135,12 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
     };
 
     try {
-      console.log("Updating transaction:", {
+      await updateMutation.mutateAsync({
         id: transaction.id,
         data: updateData,
       });
-      const result = await updateMutation.mutateAsync({
-        id: transaction.id,
-        data: updateData,
-      });
-      console.log("Update successful:", result);
       onClose();
     } catch (error) {
-      console.error("Update error:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Failed to update transaction";
       setErrors([errorMessage]);
@@ -240,8 +234,8 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
             <FormControl fullWidth>
               <InputLabel>Subcategory</InputLabel>
               <Select
-                value={formData.subcategory || ""}
-                onChange={(e) => handleChange("subcategory", e.target.value)}
+                value={formData.sub_category || ""}
+                onChange={(e) => handleChange("sub_category", e.target.value)}
                 label="Subcategory"
                 disabled={
                   !formData.category || getAvailableSubcategories().length === 0

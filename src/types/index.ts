@@ -5,7 +5,7 @@ export interface Transaction {
   amount: number;
   currency: string;
   category: string;
-  subcategory?: string;
+  sub_category?: string;
   type: 'expense' | 'income';
   date: string; // ISO date string
   description: string;
@@ -17,7 +17,7 @@ export interface TransactionCreateInput {
   amount: number;
   currency: string;
   category: string;
-  subcategory?: string;
+  sub_category?: string;
   type: 'expense' | 'income';
   date: string;
   description: string;
@@ -28,7 +28,7 @@ export interface TransactionUpdateInput {
   amount?: number;
   currency?: string;
   category?: string;
-  subcategory?: string;
+  sub_category?: string;
   type?: 'expense' | 'income';
   date?: string;
   description?: string;

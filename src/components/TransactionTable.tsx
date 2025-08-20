@@ -138,8 +138,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" noWrap sx={{ maxWidth: 150 }}>
-                      {transaction.subcategory && transaction.subcategory.trim()
-                        ? getCategoryLabel(transaction.subcategory)
+                      {transaction.sub_category &&
+                      transaction.sub_category.trim()
+                        ? getCategoryLabel(transaction.sub_category)
                         : "-"}
                     </Typography>
                   </TableCell>

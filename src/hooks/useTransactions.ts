@@ -50,8 +50,6 @@ export const useUpdateTransaction = () => {
     mutationFn: ({ id, data }: { id: string | number; data: TransactionCreateInput }) =>
       transactionsApi.updateTransaction(id, data as TransactionUpdateInput),
     onSuccess: (updatedTransaction, { id }) => {
-      console.log('Update mutation success:', { id, updatedTransaction });
-      
       // Update the transaction in cache
       queryClient.setQueryData(
         QUERY_KEYS.transaction(id),
@@ -103,11 +101,8 @@ export const useParseExpense = () => {
   return useMutation({
     mutationFn: (data: ParseExpenseRequest) => transactionsApi.parseExpense(data),
     onSuccess: (response) => {
-      console.log('Parse expense response:', response);
-      
       // Ensure we have transactions array
       if (!response.transactions || !Array.isArray(response.transactions)) {
-        console.error('Invalid response format - missing transactions array');
         return;
       }
 
@@ -116,7 +111,6 @@ export const useParseExpense = () => {
         { queryKey: QUERY_KEYS.transactions },
         (oldData: any) => {
           if (!oldData) {
-            console.log('No existing data, creating new cache entry');
             return {
               transactions: response.transactions,
               total: response.transactions.length,
@@ -125,7 +119,6 @@ export const useParseExpense = () => {
             };
           }
           
-          console.log('Updating existing cache with new transactions');
           return {
             ...oldData,
             transactions: [...response.transactions, ...(oldData.transactions || [])],
@@ -137,8 +130,8 @@ export const useParseExpense = () => {
       // Invalidate to ensure fresh data on next fetch
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.transactions });
     },
-    onError: (error) => {
-      console.error('Parse expense mutation error:', error);
+    onError: () => {
+      // Handle error silently or with user-friendly notification
     },
   });
 };
