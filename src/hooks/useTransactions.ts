@@ -74,8 +74,8 @@ export const useUpdateTransaction = () => {
         }
       );
     },
-    onError: (error, variables) => {
-      console.error('Update mutation error:', { error, variables });
+    onError: () => {
+      // Handle error silently or with user-friendly notification
     },
   });
 };
@@ -106,28 +106,8 @@ export const useParseExpense = () => {
         return;
       }
 
-      // Optimistically add parsed transactions to cache
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.transactions },
-        (oldData: any) => {
-          if (!oldData) {
-            return {
-              transactions: response.transactions,
-              total: response.transactions.length,
-              limit: 20,
-              offset: 0,
-            };
-          }
-          
-          return {
-            ...oldData,
-            transactions: [...response.transactions, ...(oldData.transactions || [])],
-            total: (oldData.total || oldData.transactions?.length || 0) + response.transactions.length,
-          };
-        }
-      );
-
-      // Invalidate to ensure fresh data on next fetch
+      // Just invalidate to refetch fresh data from backend
+      // This avoids duplicate entries from optimistic updates
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.transactions });
     },
     onError: () => {
