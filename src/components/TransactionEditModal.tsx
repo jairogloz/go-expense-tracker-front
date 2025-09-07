@@ -17,7 +17,6 @@ import {
 import type { Transaction, TransactionCreateInput } from "../types";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, SUBCATEGORIES } from "../types";
 import { useUpdateTransaction } from "../hooks/useTransactions";
-import { useAccountsMap } from "../hooks/useAccounts";
 import { validateTransactionData, formatDateForInput } from "../utils";
 
 interface TransactionEditModalProps {
@@ -36,7 +35,6 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
 
   const updateMutation = useUpdateTransaction();
-  const { accounts } = useAccountsMap();
 
   // Helper function to get available categories based on transaction type
   const getAvailableCategories = () => {
@@ -95,7 +93,6 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
         category: transaction.category,
         sub_category: transaction.sub_category,
         type: transaction.type,
-        account_id: transaction.account_id,
         date: formatDateForInput(transaction.date),
         description: transaction.description,
       });
@@ -131,7 +128,6 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
       type: formData.type!,
       date: new Date(formData.date!).toISOString(),
       description: formData.description!,
-      account_id: formData.account_id,
     };
 
     try {
@@ -256,24 +252,6 @@ const TransactionEditModal: React.FC<TransactionEditModalProps> = ({
 
             <div style={{ flex: 1 }} />
           </Box>
-
-          <FormControl fullWidth>
-            <InputLabel>Account</InputLabel>
-            <Select
-              value={formData.account_id || ""}
-              onChange={(e) => handleChange("account_id", e.target.value)}
-              label="Account"
-            >
-              <MenuItem value="">
-                <em>No Account</em>
-              </MenuItem>
-              {accounts.map((account) => (
-                <MenuItem key={account.id} value={account.id}>
-                  {account.name} ({account.type})
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
           <TextField
             fullWidth

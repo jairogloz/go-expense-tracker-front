@@ -7,7 +7,6 @@ import type {
   TransactionsResponse,
   ParseExpenseRequest,
   ParseExpenseResponse,
-  AccountsResponse,
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -137,13 +136,7 @@ export const transactionsApi = {
   },
 };
 
-export const accountsApi = {
-  // Get all accounts for the user
-  getAccounts: async (): Promise<AccountsResponse> => {
-    const response = await apiClient.get('/accounts');
-    return response.data;
-  },
-};
+
 
 // Utility function to get current auth token (useful for debugging)
 export const getCurrentToken = async (): Promise<string | null> => {
